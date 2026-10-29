@@ -16,6 +16,9 @@ services:
       AUTHCO_INTERNAL_URL: http://authco:8087/authco
       INVENTOCO_RESOURCE_ID: ${PUBLIC_URL}/inventoco-api
       CORS_ALLOWED_ORIGINS: ${PUBLIC_URL}
+      # Store-chain prices for the shared catalog (D1, Éxito, Carulla, Agro Fruver); see IngestJob
+      INGEST_ENABLED: ${INGEST_ENABLED:-false}
+      INGEST_ON_START: ${INGEST_ON_START:-false}
     networks: [default, platform]
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8095/inventoco-api/actuator/health/readiness || exit 1"]

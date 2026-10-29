@@ -58,3 +58,20 @@ inventoco:
     resource-id: ${INVENTOCO_RESOURCE_ID:http://localhost:8095/inventoco-api}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4500}
+  # Store-chain prices of Colombia for the shared catalog (see IngestJob). Off by default.
+  ingest:
+    enabled: ${INGEST_ENABLED:false}
+    on-start: ${INGEST_ON_START:false}
+    cron: ${INGEST_CRON:0 30 5 * * *}
+    per-term: ${INGEST_PER_TERM:500}
+    pause: ${INGEST_PAUSE:PT1.5S}
+    d1:
+      url: https://www.d1.com.co
+      terms: /despensa,/frutas-y-verduras,/lacteos-y-huevos,/bebidas,/pollo-carne-y-pescado,/hogar/aseo-y-limpieza,/cuidado-personal-y-belleza
+    exito:
+      url: https://www.exito.com
+    carulla:
+      url: https://www.carulla.com
+    search-terms: arroz,aceite,azucar,cafe,leche,huevos,panela,frijol,lenteja,pasta,harina,sal,atun,chocolate,mantequilla,queso,detergente,jabon,papel higienico,suavizante,lavaloza
+    agrofruver:
+      url: https://aebyskaumhwkuelbxviv.supabase.co/functions/v1/inventario

@@ -34,6 +34,11 @@ public class SupplierJpaGateway implements SupplierGateway {
     }
 
     @Override
+    public Optional<Supplier> findSystem(String country, String name) {
+        return repo.findSystem(country, name).map(SupplierJpaGateway::toDomain);
+    }
+
+    @Override
     public Supplier save(Supplier s) {
         return toDomain(repo.save(SupplierEntity.builder()
                 .id(s.id() != null ? s.id() : UUID.randomUUID())

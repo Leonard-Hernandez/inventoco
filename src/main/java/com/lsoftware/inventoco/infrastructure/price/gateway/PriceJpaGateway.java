@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -30,6 +31,12 @@ public class PriceJpaGateway implements PriceGateway {
                 .country(p.country()).visibility(p.visibility().name()).observedAt(p.observedAt())
                 .purchaseId(p.purchaseId()).createdAt(p.createdAt())
                 .build()));
+    }
+
+    @Override
+    public Optional<PriceObservation> latestAt(UUID supplierId, UUID catalogProductId) {
+        return repo.findFirstBySupplierIdAndCatalogProductIdOrderByObservedAtDesc(supplierId, catalogProductId)
+                .map(PriceJpaGateway::toDomain);
     }
 
     @Override

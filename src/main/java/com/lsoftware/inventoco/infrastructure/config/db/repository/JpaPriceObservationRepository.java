@@ -8,9 +8,12 @@ import org.springframework.data.repository.query.Param;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface JpaPriceObservationRepository extends JpaRepository<PriceObservationEntity, UUID> {
+    Optional<PriceObservationEntity> findFirstBySupplierIdAndCatalogProductIdOrderByObservedAtDesc(UUID supplierId, UUID catalogProductId);
+
     List<PriceObservationEntity> findByOwnerIdAndItemIdOrderByObservedAtDesc(UUID ownerId, UUID itemId);
     List<PriceObservationEntity> findByOwnerIdAndObservedAtGreaterThanEqualOrderByObservedAt(UUID ownerId, Instant since);
 
