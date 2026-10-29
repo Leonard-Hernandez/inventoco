@@ -41,7 +41,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InventoryTools {
 
-    private static final String QUANTITY_UNIT = "Unit of the quantity (kg, g, lb, oz, l, ml, gal, unit, dozen...); defaults to the item's unit";
+    private static final String QUANTITY_UNIT = "Unit of the quantity (kg, g, lb, oz, l, ml, gal, unit, dozen, m, cm, yd, m2...); defaults to the item's unit";
 
     private final ManageItemUseCase items;
     private final RecordMovementUseCase movements;
@@ -70,10 +70,10 @@ public class InventoryTools {
                         Schemas.object().id("item_id", "Item id (from list_items)", true).build(), true,
                         (a, user) -> itemDetail(user, a.requiredId("item_id"))),
                 new McpTool("create_item", "Create item",
-                        "Adds an item to the inventory. Its unit fixes how it is measured (count, mass or volume).",
+                        "Adds an item to the inventory. Its unit fixes how it is measured (count, mass, volume, length or area), e.g. fabric in m.",
                         Schemas.object()
                                 .string("name", "Name, e.g. 'Arroz Diana'", true)
-                                .string("unit", "Unit it is counted in: unit, kg, g, l, ml...", true)
+                                .string("unit", "Unit it is counted in: unit, kg, g, l, ml, m, cm, m2...", true)
                                 .number("min_stock", "Minimum stock before it should be bought, in that unit", false)
                                 .number("initial_stock", "Stock right now, in that unit", false)
                                 .string("category", "Category, e.g. 'Despensa', 'Aseo'", false)

@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 /**
- * Units the user can type. Each one is a factor of its dimension's base unit (unit, g, ml), so
+ * Units the user can type. Each one is a factor of its dimension's base unit (unit, g, ml, mm, cm²), so
  * 1.5 kg is stored as 1500 and shown again in whatever unit the item prefers.
  */
 public enum Unit {
@@ -23,7 +23,16 @@ public enum Unit {
     CL(Dimension.VOLUME, "10", "cl"),
     L(Dimension.VOLUME, "1000", "l", "lt", "litro"),
     GAL(Dimension.VOLUME, "3785.411784", "gal", "galon"),
-    FL_OZ(Dimension.VOLUME, "29.5735295625", "fl_oz", "floz", "fl oz");
+    FL_OZ(Dimension.VOLUME, "29.5735295625", "fl_oz", "floz", "fl oz"),
+    MM(Dimension.LENGTH, "1", "mm"),
+    CM(Dimension.LENGTH, "10", "cm"),
+    M(Dimension.LENGTH, "1000", "m", "mt", "mts", "metro", "metros"),
+    IN(Dimension.LENGTH, "25.4", "in", "pulgada", "pulgadas"),
+    FT(Dimension.LENGTH, "304.8", "ft", "pie", "pies"),
+    YD(Dimension.LENGTH, "914.4", "yd", "yarda", "yardas"),
+    CM2(Dimension.AREA, "1", "cm2", "cm²"),
+    M2(Dimension.AREA, "10000", "m2", "m²", "metro cuadrado", "metros cuadrados"),
+    FT2(Dimension.AREA, "929.0304", "ft2", "ft²");
 
     /** Scale of stored quantities (numeric(19,6)). */
     public static final int SCALE = 6;

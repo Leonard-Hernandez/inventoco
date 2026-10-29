@@ -13,13 +13,14 @@ import java.util.regex.Pattern;
 
 /**
  * The package size written in a store's product name: "Arroz Diana 500 G", "Aceite 3.000 Ml",
- * "Arepa 5 Und Masmaí 400 Grs", "Doria Pague 250 G Lleve 275 G". Weight or volume wins over a
+ * "Arepa 5 Und Masmaí 400 Grs", "Doria Pague 250 G Lleve 275 G", "Tela lino 1,5 m". A measure wins over a
  * count of units, and the last one written wins ("lleve 275 G" is what is in the bag).
  */
 public record PackageSize(BigDecimal quantity, Unit unit) {
 
     private static final Pattern SIZE = Pattern.compile(
-            "(\\d+(?:[.,]\\d+)?)\\s*(kgs?|kilos?|grs?|gramos|g|mg|ml|cc|lts?|litros?|l|lbs?|libras?|oz|unds?|unidades|un|u)\\b");
+            "(\\d+(?:[.,]\\d+)?)\\s*(kgs?|kilos?|grs?|gramos|g|mg|ml|cc|lts?|litros?|l|lbs?|libras?|oz|unds?|unidades|un|u"
+                    + "|m2|m²|cm2|cm²|metros cuadrados|mts?|metros?|mm|cm|m|yardas?|yd)(?![a-z0-9])");
 
     private static final Map<String, Unit> UNITS = Map.ofEntries(
             Map.entry("kg", Unit.KG), Map.entry("kgs", Unit.KG), Map.entry("kilo", Unit.KG), Map.entry("kilos", Unit.KG),
@@ -28,6 +29,9 @@ public record PackageSize(BigDecimal quantity, Unit unit) {
             Map.entry("l", Unit.L), Map.entry("lt", Unit.L), Map.entry("lts", Unit.L), Map.entry("litro", Unit.L), Map.entry("litros", Unit.L),
             Map.entry("lb", Unit.LB), Map.entry("lbs", Unit.LB), Map.entry("libra", Unit.LB), Map.entry("libras", Unit.LB),
             Map.entry("oz", Unit.OZ),
+            Map.entry("m", Unit.M), Map.entry("mt", Unit.M), Map.entry("mts", Unit.M), Map.entry("metro", Unit.M), Map.entry("metros", Unit.M),
+            Map.entry("cm", Unit.CM), Map.entry("mm", Unit.MM), Map.entry("yd", Unit.YD), Map.entry("yarda", Unit.YD), Map.entry("yardas", Unit.YD),
+            Map.entry("m2", Unit.M2), Map.entry("m²", Unit.M2), Map.entry("metros cuadrados", Unit.M2), Map.entry("cm2", Unit.CM2), Map.entry("cm²", Unit.CM2),
             Map.entry("und", Unit.UNIT), Map.entry("unds", Unit.UNIT), Map.entry("unidades", Unit.UNIT), Map.entry("un", Unit.UNIT), Map.entry("u", Unit.UNIT));
 
     public static Optional<PackageSize> parse(String name) {

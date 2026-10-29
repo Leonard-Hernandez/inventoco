@@ -20,6 +20,15 @@ class PackageSizeTest {
     }
 
     @Test
+    void lengthsAndAreasAreReadToo() {
+        assertThat(PackageSize.parse("Tela Lino Natural 1,5 m")).contains(size("1.5", Unit.M));
+        assertThat(PackageSize.parse("Cable Duplex 10 Mts")).contains(size("10", Unit.M));
+        assertThat(PackageSize.parse("Cinta de Enmascarar 24 mm x 40 m")).contains(size("40", Unit.M));
+        assertThat(PackageSize.parse("Vinilo Adhesivo 2 m²")).contains(size("2", Unit.M2));
+        assertThat(PackageSize.parse("Piso Laminado Caja 2.13 M2")).contains(size("2.13", Unit.M2));
+    }
+
+    @Test
     void weightOrVolumeWinsOverACountAndTheLastOneWritten() {
         assertThat(PackageSize.parse("Arepa de Chócolo 5 Und Masmaí 400 Grs")).contains(size("400", Unit.G));
         assertThat(PackageSize.parse("Spaguetti Doria Pague 250 G Lleve 275 G")).contains(size("275", Unit.G));

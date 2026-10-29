@@ -35,7 +35,7 @@ It is a member of the Synapco family (the name ends in "co", like Finco, Restauc
 
 - One SPA for all users (like Finco). Everything is scoped to the signed-in user.
 - Angular 19 at `inventoco-app/`. API at `/inventoco-api` (Spring Boot 4). MCP at `/inventoco-api/mcp`.
-- Units: count (unit, dozen), mass (mg, g, kg, lb, oz), volume (ml, cl, l, gal, fl oz). Stored in base units.
+- Units: count (unit, dozen), mass (mg, g, kg, lb, oz), volume (ml, cl, l, gal, fl oz), length (mm, cm, m, in, ft, yd: fabric, cable, hose) and area (cm², m², ft²). Stored in base units (unit, g, ml, mm, cm²).
 - Public prices never reveal who recorded them.
 - Forecast confidence is LOW, MEDIUM or HIGH. It is LOW with fewer than 5 consumption records, and the UI must say so.
 

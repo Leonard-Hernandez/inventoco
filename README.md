@@ -1,6 +1,6 @@
 # Inventoco
 
-Inventory of anything (units, weight, volume) for households and small businesses, part of the Synapco family:
+Inventory of anything (units, weight, volume, length such as meters of fabric, area) for households and small businesses, part of the Synapco family:
 
 - minimum stock and depletion forecasts from recorded consumption
 - price history per supplier, shared anonymously by choice

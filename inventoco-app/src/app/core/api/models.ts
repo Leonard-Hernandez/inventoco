@@ -1,6 +1,6 @@
 /** API shapes (inventoco-api). Instants are ISO-8601 strings in UTC; quantities are in each item's unit. */
 
-export type Dimension = 'COUNT' | 'MASS' | 'VOLUME';
+export type Dimension = 'COUNT' | 'MASS' | 'VOLUME' | 'LENGTH' | 'AREA';
 export type MovementType = 'PURCHASE' | 'CONSUMPTION' | 'WASTE' | 'ADJUSTMENT';
 export type Visibility = 'PRIVATE' | 'PUBLIC';
 export type Confidence = 'LOW' | 'MEDIUM' | 'HIGH';

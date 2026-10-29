@@ -40,7 +40,7 @@ public class McpController {
             Tools over the user's own home or business inventory: items and their stock, consumption, \
             purchases, prices per supplier, prices other users shared publicly, a shopping list and forecasts \
             of when each item runs out. Find items with list_items and use their ids. Quantities can be given \
-            in any unit of the item's kind (kg, g, lb, l, ml, unit, dozen...). Amounts are in the user's \
+            in any unit of the item's kind (kg, g, lb, l, ml, unit, dozen, m, cm, yd, m2...). Amounts are in the user's \
             currency (get_profile). Dates without a time zone are read in the user's time zone. Before recording \
             something, make sure of the item, quantity and unit; never invent prices.""";
 

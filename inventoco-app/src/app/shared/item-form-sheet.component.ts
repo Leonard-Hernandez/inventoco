@@ -5,8 +5,8 @@ import { CatalogProduct, Dimension, Item, UnitInfo } from '../core/api/models';
 import { t } from '../core/i18n/i18n';
 
 /**
- * Create or edit an item. The unit chosen at creation fixes how it is measured (count, weight or
- * volume); linking it to a shared catalog product is what lets the user see and share public prices.
+ * Create or edit an item. The unit chosen at creation fixes how it is measured (count, weight,
+ * volume, length or area); linking it to a shared catalog product is what lets the user see and share public prices.
  */
 @Component({
   selector: 'app-item-form-sheet',
@@ -15,7 +15,7 @@ import { t } from '../core/i18n/i18n';
     <div class="sheet-backdrop" (click)="closed.emit()"></div>
     <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="it-title" (keydown.escape)="closed.emit()">
       <h2 id="it-title">{{ item() ? t('Editar producto', 'Edit item') : t('Nuevo producto', 'New item') }}</h2>
-      <p class="sub">{{ t('Cualquier cosa que guardes: por unidades, peso o volumen.', 'Anything you keep: by units, weight or volume.') }}</p>
+      <p class="sub">{{ t('Cualquier cosa que guardes: por unidades, peso, volumen, metros o metros cuadrados.', 'Anything you keep: by units, weight, volume, meters or square meters.') }}</p>
       <form class="form" (ngSubmit)="save()">
         <div class="field">
           <label for="it-name">{{ t('Nombre', 'Name') }}</label>
@@ -89,8 +89,11 @@ export class ItemFormSheetComponent implements OnInit {
   readonly matches = signal<CatalogProduct[]>([]);
   readonly groups = computed(() => {
     const fixed = this.item()?.dimension;
-    const labels: Record<Dimension, string> = { COUNT: t('Unidades', 'Count'), MASS: t('Peso', 'Weight'), VOLUME: t('Volumen', 'Volume') };
-    return (['COUNT', 'MASS', 'VOLUME'] as Dimension[])
+    const labels: Record<Dimension, string> = {
+      COUNT: t('Unidades', 'Count'), MASS: t('Peso', 'Weight'), VOLUME: t('Volumen', 'Volume'),
+      LENGTH: t('Longitud', 'Length'), AREA: t('Área', 'Area')
+    };
+    return (['COUNT', 'MASS', 'VOLUME', 'LENGTH', 'AREA'] as Dimension[])
       .filter((d) => !fixed || d === fixed)
       .map((d) => ({ dimension: d, label: labels[d], units: this.allUnits().filter((u) => u.dimension === d) }));
   });

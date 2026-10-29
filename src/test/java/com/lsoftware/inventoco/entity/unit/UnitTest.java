@@ -37,6 +37,18 @@ class UnitTest {
     }
 
     @Test
+    void fabricAndMaterialsAreMeasuredInLengthOrArea() {
+        assertThat(Unit.parse("metros")).isEqualTo(Unit.M);
+        assertThat(Unit.parse("m²")).isEqualTo(Unit.M2);
+        assertThat(Unit.M.toBase(new BigDecimal("2.5"))).isEqualByComparingTo("2500");
+        // 1 yard of fabric is 0.9144 m; 1 m² is 10 000 cm²
+        assertThat(Unit.M.fromBase(Unit.YD.toBase(BigDecimal.ONE))).isEqualByComparingTo("0.9144");
+        assertThat(Unit.M2.toBase(BigDecimal.ONE)).isEqualByComparingTo("10000");
+        assertThat(Unit.M.dimension().baseUnit()).isEqualTo(Unit.MM);
+        assertThatThrownBy(() -> Unit.parse("m2", Dimension.LENGTH)).hasMessageContaining("m2 measures area, this item is measured in length");
+    }
+
+    @Test
     void aUnitOfAnotherDimensionIsRejected() {
         assertThatThrownBy(() -> Unit.parse("ml", Dimension.MASS))
                 .isInstanceOf(DomainException.class)
