@@ -11,6 +11,8 @@ import java.util.UUID;
 public interface ItemGateway {
     /** Only the owner's items: another user's id is the same as a missing one. */
     Optional<Item> findOwned(UUID ownerId, UUID id);
+    /** Like findOwned, locking the row until the transaction ends (to read the stock and change it safely). */
+    Optional<Item> lockOwned(UUID ownerId, UUID id);
     List<Item> listActive(UUID ownerId, String query);
     List<Item> findOwned(UUID ownerId, Collection<UUID> ids);
     Item save(Item item);

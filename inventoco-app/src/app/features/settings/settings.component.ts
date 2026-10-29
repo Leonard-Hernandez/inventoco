@@ -57,6 +57,7 @@ const COUNTRIES = ('AD AE AF AG AI AL AM AO AR AS AT AU AW AX AZ BA BB BD BE BF 
             <span class="hint">{{ t('Las fechas se guardan como instantes y se muestran en esta zona.', 'Dates are stored as instants and shown in this zone.') }}</span>
           </div>
           <label class="check"><input class="switch" type="checkbox" [(ngModel)]="share" name="share"> {{ t('Compartir mis precios por defecto, sin mi nombre', 'Share my prices by default, without my name') }}</label>
+          <span class="hint">{{ t('Se comparten el precio, el proveedor, su ciudad y la fecha; puedes cambiarlo en cada precio.', 'The price, supplier, its city and date are shared; you can change it on each price.') }}</span>
           <div class="actions">
             <button class="btn primary" type="submit" [disabled]="busy() || !country || !timeZone">{{ welcome() ? t('Empezar', 'Start') : t('Guardar', 'Save') }}</button>
           </div>

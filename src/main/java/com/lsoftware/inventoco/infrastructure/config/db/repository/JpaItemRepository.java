@@ -1,7 +1,9 @@
 package com.lsoftware.inventoco.infrastructure.config.db.repository;
 
 import com.lsoftware.inventoco.infrastructure.config.db.schema.ItemEntity;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +17,10 @@ import java.util.UUID;
 
 public interface JpaItemRepository extends JpaRepository<ItemEntity, UUID> {
     Optional<ItemEntity> findByIdAndOwnerId(UUID id, UUID ownerId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select i from ItemEntity i where i.id = :id and i.ownerId = :owner")
+    Optional<ItemEntity> lockOwned(@Param("owner") UUID owner, @Param("id") UUID id);
     List<ItemEntity> findByOwnerIdAndIdIn(UUID ownerId, Collection<UUID> ids);
     List<ItemEntity> findByOwnerIdAndArchivedFalseOrderByName(UUID ownerId);
 

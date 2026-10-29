@@ -100,7 +100,7 @@ public class ShoppingListUseCase {
 
     @Transactional
     public Purchase complete(UserProfile user, UUID purchaseId, List<BoughtLine> bought, Instant occurredAt) {
-        Purchase purchase = purchases.findOwned(user.id(), purchaseId)
+        Purchase purchase = purchases.lockOwned(user.id(), purchaseId)
                 .orElseThrow(() -> new NotFoundException("PURCHASE_NOT_FOUND", "Shopping list not found"));
         if (purchase.status() != PurchaseStatus.DRAFT) {
             throw new ConflictException("PURCHASE_COMPLETED", "This shopping list was already completed");

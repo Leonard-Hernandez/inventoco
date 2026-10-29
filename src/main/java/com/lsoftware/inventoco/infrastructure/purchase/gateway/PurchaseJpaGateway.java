@@ -33,6 +33,12 @@ public class PurchaseJpaGateway implements PurchaseGateway {
         return repo.findByIdAndOwnerId(id, ownerId).map(PurchaseJpaGateway::toDomain);
     }
 
+    /** Lines load inside the caller's transaction (the lock needs one anyway). */
+    @Override
+    public Optional<Purchase> lockOwned(UUID ownerId, UUID id) {
+        return repo.lockOwned(ownerId, id).map(PurchaseJpaGateway::toDomain);
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<Purchase> listCompleted(UUID ownerId, int limit) {

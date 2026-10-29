@@ -37,7 +37,8 @@ public class ItemEntity {
     @Column(name = "min_stock", nullable = false, precision = 19, scale = 6)
     private BigDecimal minStock;
 
-    @Column(name = "current_stock", nullable = false, precision = 19, scale = 6)
+    /** Never in an entity UPDATE: only JpaItemRepository.addStock changes it (atomically). */
+    @Column(name = "current_stock", nullable = false, updatable = false, precision = 19, scale = 6)
     private BigDecimal currentStock;
 
     @Column(length = 14)

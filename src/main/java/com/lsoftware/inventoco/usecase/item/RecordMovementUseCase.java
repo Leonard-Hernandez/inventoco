@@ -2,6 +2,7 @@ package com.lsoftware.inventoco.usecase.item;
 
 import com.lsoftware.inventoco.entity.exception.DomainException;
 import com.lsoftware.inventoco.entity.item.exception.InsufficientStockException;
+import com.lsoftware.inventoco.entity.item.exception.ItemNotFoundException;
 import com.lsoftware.inventoco.entity.item.gateway.ItemGateway;
 import com.lsoftware.inventoco.entity.item.gateway.MovementGateway;
 import com.lsoftware.inventoco.entity.item.model.Item;
@@ -49,6 +50,10 @@ public class RecordMovementUseCase {
         if (c.type() == null) throw new DomainException("INVALID_MOVEMENT", "Missing movement type");
         if (c.quantity() == null || c.quantity().signum() < 0) {
             throw new DomainException("INVALID_QUANTITY", "Quantities cannot be negative");
+        }
+        if (c.type() == MovementType.ADJUSTMENT) {
+            // A count sets the stock: read it under a row lock so a concurrent movement cannot skew the difference
+            item = items.lockOwned(ownerId, item.id()).orElseThrow(ItemNotFoundException::new);
         }
         Unit unit = c.unit() == null || c.unit().isBlank() ? item.displayUnit() : Unit.parse(c.unit(), item.dimension());
         BigDecimal amount = unit.toBase(c.quantity());

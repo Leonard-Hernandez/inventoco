@@ -9,6 +9,8 @@ import java.util.UUID;
 public interface PurchaseGateway {
     Optional<Purchase> findDraft(UUID ownerId);
     Optional<Purchase> findOwned(UUID ownerId, UUID id);
+    /** Like findOwned, locking the row so a list is completed only once. */
+    Optional<Purchase> lockOwned(UUID ownerId, UUID id);
     List<Purchase> listCompleted(UUID ownerId, int limit);
     Purchase save(Purchase purchase);
     void delete(UUID id);

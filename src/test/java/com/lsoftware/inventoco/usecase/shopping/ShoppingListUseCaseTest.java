@@ -96,7 +96,7 @@ class ShoppingListUseCaseTest {
     void completingTheListAddsTheStockAndRecordsThePricesPaid() {
         Item rice = rice(ANA, "0.5", "1", null);
         Purchase draft = draft(List.of());
-        when(purchases.findOwned(ANA.id(), draft.id())).thenReturn(Optional.of(draft));
+        when(purchases.lockOwned(ANA.id(), draft.id())).thenReturn(Optional.of(draft));
         when(purchases.save(any())).thenAnswer(i -> i.getArgument(0));
         when(items.get(ANA.id(), rice.id())).thenReturn(rice);
 
@@ -119,9 +119,9 @@ class ShoppingListUseCaseTest {
     @Test
     void aListIsCompletedOnceAndNeedsSomethingBought() {
         Purchase done = draft(List.of()).completed(NOW);
-        when(purchases.findOwned(ANA.id(), done.id())).thenReturn(Optional.of(done));
+        when(purchases.lockOwned(ANA.id(), done.id())).thenReturn(Optional.of(done));
         Purchase open = draft(List.of());
-        when(purchases.findOwned(ANA.id(), open.id())).thenReturn(Optional.of(open));
+        when(purchases.lockOwned(ANA.id(), open.id())).thenReturn(Optional.of(open));
 
         assertThatThrownBy(() -> useCase.complete(ANA, done.id(), List.of(), null)).isInstanceOf(ConflictException.class);
         assertThatThrownBy(() -> useCase.complete(ANA, open.id(), List.of(

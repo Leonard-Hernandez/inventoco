@@ -30,6 +30,11 @@ public class ItemJpaGateway implements ItemGateway {
     }
 
     @Override
+    public Optional<Item> lockOwned(UUID ownerId, UUID id) {
+        return repo.lockOwned(ownerId, id).map(ItemJpaGateway::toDomain);
+    }
+
+    @Override
     public List<Item> listActive(UUID ownerId, String query) {
         List<ItemEntity> list = query == null
                 ? repo.findByOwnerIdAndArchivedFalseOrderByName(ownerId)

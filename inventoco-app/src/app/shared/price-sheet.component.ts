@@ -51,6 +51,7 @@ import { localInput, toInstant } from './format';
         </div>
         @if (item().catalogProductId) {
           <label class="check"><input class="switch" type="checkbox" [(ngModel)]="share" name="share"> {{ t('Compartir este precio, sin tu nombre, para que otros compren mejor', 'Share this price, without your name, so others buy better') }}</label>
+          <p class="note">{{ t('Se ven el precio, el proveedor, su ciudad y la fecha. Nunca quién lo anotó.', 'Others see the price, the supplier, its city and the date. Never who recorded it.') }}</p>
         } @else {
           <p class="note">{{ t('Este producto no está en el catálogo compartido: el precio queda solo para ti.', 'This item is not in the shared catalog: the price stays private.') }}</p>
         }

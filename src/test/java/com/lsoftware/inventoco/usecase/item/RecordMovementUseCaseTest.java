@@ -60,11 +60,17 @@ class RecordMovementUseCaseTest {
     }
 
     @Test
-    void aCountStoresTheDifferenceWithTheCurrentStock() {
+    void aCountStoresTheDifferenceWithTheStockReadUnderTheRowLock() {
+        // Another device moved stock after the item was read: the locked row has 2.3 kg, not 2
+        when(items.lockOwned(ANA.id(), rice.id())).thenReturn(Optional.of(new Item(rice.id(), ANA.id(), rice.name(),
+                rice.category(), rice.dimension(), rice.displayUnit(), rice.minStock(), new BigDecimal("2300"), null, null,
+                false, NOW, NOW)));
+
         StockMovement m = useCase.execute(ANA.id(), rice.id(),
                 new MovementCommand(MovementType.ADJUSTMENT, new BigDecimal("1.2"), "kg", null, null));
 
-        assertThat(m.quantity()).isEqualByComparingTo("-800");
+        assertThat(m.quantity()).isEqualByComparingTo("-1100");
+        verify(items).lockOwned(ANA.id(), rice.id());
     }
 
     @Test
