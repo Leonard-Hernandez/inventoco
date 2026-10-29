@@ -1,0 +1,6 @@
+build
+.gradle
+bin
+inventoco-app
+odd
+.env

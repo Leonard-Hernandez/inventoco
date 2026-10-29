@@ -1,0 +1,60 @@
+# Inventoco stack behind one origin (gateway). Secrets come from .env (see .env.example).
+# Postgres and authco are shared with the other apps on this machine: they run in
+# ../platform and are reached over its external "platform" network.
+#   (cd ../platform && docker compose up -d)
+#   docker compose up -d --build   ->   http://localhost:8094
+services:
+  inventoco-api:
+    restart: unless-stopped
+    build: .
+    image: leonard20/inventoco:latest
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/inventoco
+      USER_DB: ${USER_DB}
+      PASSWORD_DB: ${PASSWORD_DB}
+      AUTHCO_ISSUER: ${PUBLIC_URL}/authco
+      AUTHCO_INTERNAL_URL: http://authco:8087/authco
+      INVENTOCO_RESOURCE_ID: ${PUBLIC_URL}/inventoco-api
+      CORS_ALLOWED_ORIGINS: ${PUBLIC_URL}
+    networks: [default, platform]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8095/inventoco-api/actuator/health/readiness || exit 1"]
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
+
+  inventoco-app:
+    restart: unless-stopped
+    build: ./inventoco-app
+    image: leonard20/inventoco-app:latest
+    environment:
+      # Runtime config written to /config.json at container start
+      API_URL: /inventoco-api
+      AUTH_URL: ${PUBLIC_URL}/authco
+      AUTH_CLIENT_ID: inventoco-app
+      AUTH_RESOURCE: ${PUBLIC_URL}/inventoco-api
+
+  gateway:
+    restart: unless-stopped
+    image: nginx:1.27-alpine
+    ports:
+      - "${GATEWAY_PORT:-8094}:80"
+    volumes:
+      - ./deploy/gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    # /authco goes to the shared authco
+    networks: [default, platform]
+
+  # Public demo: Cloudflare quick tunnel to the gateway (random https://*.trycloudflare.com).
+  #   docker compose --profile demo up -d --no-deps tunnel
+  #   docker compose logs --since 2m tunnel | grep trycloudflare
+  # Recreating this container changes the URL (and then .env, Google and the authco client).
+  tunnel:
+    restart: unless-stopped
+    image: cloudflare/cloudflared:2025.9.1
+    profiles: ["demo"]
+    command: tunnel --no-autoupdate --url http://gateway:80
+
+networks:
+  platform:
+    external: true
