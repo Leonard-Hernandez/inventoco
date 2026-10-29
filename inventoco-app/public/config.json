@@ -1,0 +1,6 @@
+{
+  "apiUrl": "/inventoco-api",
+  "authUrl": "http://localhost:8094/authco",
+  "clientId": "inventoco-app",
+  "resource": "http://localhost:8094/inventoco-api"
+}

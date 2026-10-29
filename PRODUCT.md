@@ -46,7 +46,7 @@ It is a member of the Synapco family (the name ends in "co", like Finco, Restauc
 - Fonts: Antonio Light, Schibsted Grotesk, Martian Mono. The syllable "co" is set in `pulse`. A signal field sits behind every screen.
 - No flags or national symbols, and no rosette or mandala ornaments.
 - The Inventoco palette is proposed by Claude and approved by Leonard.
-- Copy is English in this app (the request asked for international). Spanish comes later.
+- Bilingual like the family: Spanish (es-CO) and English, chosen at the bottom of the sidebar (shared "synapco-lang" choice). API error messages are English.
 
 ## Evidence on Hand
 
