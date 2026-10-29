@@ -1,0 +1,60 @@
+server:
+  port: ${PORT:8095}
+  # Every endpoint lives under /inventoco-api (same path the gateway routes)
+  servlet:
+    context-path: /inventoco-api
+  forward-headers-strategy: framework
+
+spring:
+  application:
+    name: inventoco
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5434/inventoco}
+    username: ${USER_DB:inventoco}
+    password: ${PASSWORD_DB:mysecretpassword}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+    show-sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  devtools:
+    restart:
+      enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        # /actuator/health/liveness and /actuator/health/readiness
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+inventoco:
+  # authco: public issuer (iss claim), internal URL (JWKS, userinfo) and inventoco audience.
+  # The MCP endpoint (<resource-id>/mcp) shares this audience.
+  security:
+    issuer: ${AUTHCO_ISSUER:http://localhost:8087/authco}
+    internal-url: ${AUTHCO_INTERNAL_URL:${inventoco.security.issuer}}
+    resource-id: ${INVENTOCO_RESOURCE_ID:http://localhost:8095/inventoco-api}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4500}
