@@ -36,6 +36,38 @@ class PackageSizeTest {
     }
 
     @Test
+    void aCountWinsOverTheLengthOrAreaOfEachOne() {
+        assertThat(PackageSize.parse("Platos Desechables 23 cm x 20 Und")).contains(size("20", Unit.UNIT));
+        assertThat(PackageSize.parse("Bolsa Basura 50 x 60 cm 10 Und")).contains(size("10", Unit.UNIT));
+        assertThat(PackageSize.parse("Piso Cerámico 60 x 60 cm Caja 1,44 m2")).contains(size("1.44", Unit.M2));
+    }
+
+    @Test
+    void theLongestLengthIsTheRollNotItsWidth() {
+        assertThat(PackageSize.parse("Papel Aluminio 7 m x 30 cm")).contains(size("7", Unit.M));
+        assertThat(PackageSize.parse("Cinta 40 m x 24 mm")).contains(size("40", Unit.M));
+        // a width is not a package size: fabric sold by the meter has none
+        assertThat(PackageSize.parse("Tela antifluido ancho 1,5 m")).isEmpty();
+        assertThat(PackageSize.parse("Tela antifluido ancho de 1,5 m rollo 50 m")).contains(size("50", Unit.M));
+    }
+
+    @Test
+    void areaSpellingsAreNotMistakenForLengths() {
+        assertThat(PackageSize.parse("Vinilo 1 metro cuadrado")).contains(size("1", Unit.M2));
+        assertThat(PackageSize.parse("Vinilo 3 metros cuadrados")).contains(size("3", Unit.M2));
+        assertThat(PackageSize.parse("Piso Cerámico 1,5 Mt2")).contains(size("1.5", Unit.M2));
+        assertThat(PackageSize.parse("Piso Cerámico 2 mts2")).contains(size("2", Unit.M2));
+    }
+
+    @Test
+    void cubicMetersAndSizeLettersAreNotLengths() {
+        // cubic meters is not a supported unit
+        assertThat(PackageSize.parse("Arena 1 m³")).isEmpty();
+        assertThat(PackageSize.parse("Pañal Etapa 3 M x 30")).contains(size("30", Unit.UNIT));
+        assertThat(PackageSize.parse("Huevos Rojos x 30")).contains(size("30", Unit.UNIT));
+    }
+
+    @Test
     void namesWithoutASizeHaveNone() {
         assertThat(PackageSize.parse("Aguacate Hass Unidad")).isEmpty();
         assertThat(PackageSize.parse("Bon Bon Bum Fresa")).isEmpty();

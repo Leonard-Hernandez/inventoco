@@ -34,6 +34,8 @@ class UnitTest {
         assertThat(Unit.parse("fl oz")).isEqualTo(Unit.FL_OZ);
         assertThat(Unit.parse("und")).isEqualTo(Unit.UNIT);
         assertThatThrownBy(() -> Unit.parse("bushel")).hasMessageContaining("Unknown unit");
+        assertThat(Unit.find("metro cuadrado")).contains(Unit.M2);
+        assertThat(Unit.find("bushel")).isEmpty();
     }
 
     @Test
