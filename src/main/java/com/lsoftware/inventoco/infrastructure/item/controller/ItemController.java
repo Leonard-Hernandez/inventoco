@@ -53,7 +53,7 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "New item; its unit fixes the dimension (count, mass or volume)")
+    @Operation(summary = "New item; its unit fixes the dimension (count, mass, volume, length or area)")
     public ItemResponse create(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ItemRequest r) {
         return ItemResponse.from(items.create(user(jwt).id(), r.command()));
     }

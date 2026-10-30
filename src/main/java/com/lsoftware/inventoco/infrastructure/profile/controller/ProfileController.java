@@ -44,7 +44,7 @@ public class ProfileController {
     public record UnitResponse(String symbol, String dimension, BigDecimal factor, boolean base) {}
 
     @GetMapping("/units")
-    @Operation(summary = "Units that can be typed, with their factor to the base unit (unit, g, ml)")
+    @Operation(summary = "Units that can be typed, with their factor to the base unit (unit, g, ml, mm, cm²)")
     public List<UnitResponse> units() {
         return Arrays.stream(Unit.values())
                 .map(u -> new UnitResponse(u.symbol(), u.dimension().name(), u.factor(), u.dimension().baseUnit() == u))
