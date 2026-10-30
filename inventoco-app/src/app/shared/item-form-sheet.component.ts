@@ -4,6 +4,9 @@ import { ApiService, errorMessage } from '../core/api/api.service';
 import { CatalogProduct, Dimension, Item, UnitInfo } from '../core/api/models';
 import { t } from '../core/i18n/i18n';
 
+/** Fabric and flooring are counted in meters and square meters, not in their base mm and cm². */
+const HUMAN_UNITS: Partial<Record<Dimension, string>> = { LENGTH: 'm', AREA: 'm2' };
+
 /**
  * Create or edit an item. The unit chosen at creation fixes how it is measured (count, weight,
  * volume, length or area); linking it to a shared catalog product is what lets the user see and share public prices.
@@ -93,7 +96,7 @@ export class ItemFormSheetComponent implements OnInit {
       COUNT: t('Unidades', 'Count'), MASS: t('Peso', 'Weight'), VOLUME: t('Volumen', 'Volume'),
       LENGTH: t('Longitud', 'Length'), AREA: t('Área', 'Area')
     };
-    return (['COUNT', 'MASS', 'VOLUME', 'LENGTH', 'AREA'] as Dimension[])
+    return (Object.keys(labels) as Dimension[])
       .filter((d) => !fixed || d === fixed)
       .map((d) => ({ dimension: d, label: labels[d], units: this.allUnits().filter((u) => u.dimension === d) }));
   });
@@ -125,8 +128,10 @@ export class ItemFormSheetComponent implements OnInit {
 
   pick(m: CatalogProduct) {
     this.catalogId = m.id;
-    const base = this.allUnits().find((u) => u.dimension === m.dimension && u.base);
-    if (base && this.allUnits().find((u) => u.symbol === this.unit)?.dimension !== m.dimension) this.unit = base.symbol;
+    if (this.allUnits().find((u) => u.symbol === this.unit)?.dimension === m.dimension) return;
+    const units = this.allUnits().filter((u) => u.dimension === m.dimension);
+    const unit = units.find((u) => u.symbol === HUMAN_UNITS[m.dimension]) ?? units.find((u) => u.base);
+    if (unit) this.unit = unit.symbol;
   }
 
   async save() {
