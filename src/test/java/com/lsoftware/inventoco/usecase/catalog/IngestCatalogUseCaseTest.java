@@ -23,6 +23,7 @@ import java.util.UUID;
 import static com.lsoftware.inventoco.usecase.Fixtures.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 class IngestCatalogUseCaseTest {
@@ -49,7 +50,7 @@ class IngestCatalogUseCaseTest {
 
         var result = useCase.run(source, List.of("/despensa"), 100);
 
-        assertThat(result).isEqualTo(new IngestCatalogUseCase.Result(1, 1, 1));
+        assertThat(result).isEqualTo(new IngestCatalogUseCase.Result(1, 1, 1, 0));
         var price = ArgumentCaptor.forClass(PriceObservation.class);
         verify(prices).save(price.capture());
         assertThat(price.getValue().ownerId()).isNull();
@@ -71,7 +72,7 @@ class IngestCatalogUseCaseTest {
 
         var result = useCase.run(source, List.of("arroz"), 50);
 
-        assertThat(result).isEqualTo(new IngestCatalogUseCase.Result(2, 0, 1));
+        assertThat(result).isEqualTo(new IngestCatalogUseCase.Result(2, 0, 1, 0));
         verify(prices, times(1)).save(any());
         verify(catalog, never()).save(any());
     }
@@ -85,8 +86,22 @@ class IngestCatalogUseCaseTest {
 
         var result = useCase.run(source, List.of("*"), 50);
 
-        assertThat(result).isEqualTo(new IngestCatalogUseCase.Result(1, 0, 0));
+        assertThat(result).isEqualTo(new IngestCatalogUseCase.Result(1, 0, 0, 1));
         verify(prices, never()).save(any());
+    }
+
+    @Test
+    void aBarcodeProductWhoseListingChangedDimensionKeepsItsDimensionAndTheConflictIsCounted() {
+        CatalogProduct cloth = withId(CatalogProduct.create("Tela Lino 1,5 m", null, "7701234567890", Dimension.LENGTH, NOW));
+        when(catalog.findByGtin("7701234567890")).thenReturn(Optional.of(cloth));
+        when(source.search(any(), anyInt())).thenReturn(List.of(new StoreListing("Tela Lino x 10 Und", null,
+                "7701234567890", new BigDecimal("50000"), "COP", BigDecimal.TEN, Unit.UNIT), rice("1990")));
+
+        var result = useCase.run(source, List.of("/hogar"), 50);
+
+        assertThat(result).isEqualTo(new IngestCatalogUseCase.Result(2, 1, 1, 1));
+        verify(prices, never()).save(argThat(p -> cloth.id().equals(p.catalogProductId())));
+        verify(catalog, never()).save(argThat(p -> "7701234567890".equals(p.gtin())));
     }
 
     @Test
