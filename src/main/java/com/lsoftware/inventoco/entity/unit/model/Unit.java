@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Units the user can type. Each one is a factor of its dimension's base unit (unit, g, ml, mm, cm²), so
@@ -78,12 +79,17 @@ public enum Unit {
     /** The unit a user typed (symbol, enum name or alias, any case), e.g. "kg", "L", "fl oz". */
     public static Unit parse(String text) {
         if (text == null || text.isBlank()) throw new DomainException("INVALID_UNIT", "Missing unit");
+        return find(text).orElseThrow(() -> new DomainException("INVALID_UNIT", "Unknown unit: " + text));
+    }
+
+    /** Like {@link #parse(String)}, but empty for a blank or unknown unit instead of failing. */
+    public static Optional<Unit> find(String text) {
+        if (text == null || text.isBlank()) return Optional.empty();
         String t = text.strip().toLowerCase(Locale.ROOT);
         return Arrays.stream(values())
                 .filter(u -> u.symbol.equals(t) || u.name().toLowerCase(Locale.ROOT).equals(t)
                         || Arrays.asList(u.aliases).contains(t))
-                .findFirst()
-                .orElseThrow(() -> new DomainException("INVALID_UNIT", "Unknown unit: " + text));
+                .findFirst();
     }
 
     /** Parses a unit and checks it measures the given dimension (no grams of a liquid). */
