@@ -24,7 +24,9 @@ import java.util.Optional;
  * Seeds the shared catalog and the public prices from store chains. Each listing becomes (or
  * matches, by barcode or else by name) a catalog product, and its shelf price a public price of the chain as a
  * system supplier: no user owns it. A price is stored again only when it changed or a day passed,
- * so repeated runs build a price history without piling up copies.
+ * so repeated runs build a price history without piling up copies. A listing whose dimension differs from its
+ * matched product (now sold by weight, or its name re-parsed differently) is skipped and counted, never
+ * re-dimensioned: users' items and the price history are tied to the product's dimension.
  */
 @Slf4j
 @Component
@@ -38,10 +40,10 @@ public class IngestCatalogUseCase {
     private final PriceGateway prices;
     private final Clock clock;
 
-    public record Result(int listings, int newProducts, int prices) {}
+    public record Result(int listings, int newProducts, int prices, int dimensionConflicts) {}
 
     public Result run(CatalogSource source, List<String> terms, int perTerm) {
-        int listings = 0, products = 0, stored = 0;
+        int listings = 0, products = 0, stored = 0, conflicts = 0;
         for (String term : terms) {
             List<StoreListing> found;
             try {
@@ -55,19 +57,24 @@ public class IngestCatalogUseCase {
                 Outcome o = ingest(source, l);
                 if (o.newProduct()) products++;
                 if (o.priceStored()) stored++;
+                if (o.dimensionConflict()) conflicts++;
             }
         }
-        log.info("Catalog ingest from {}: {} listings, {} new products, {} prices", source.chain(), listings, products, stored);
-        return new Result(listings, products, stored);
+        log.info("Catalog ingest from {}: {} listings, {} new products, {} prices, {} dimension conflicts",
+                source.chain(), listings, products, stored, conflicts);
+        return new Result(listings, products, stored, conflicts);
     }
 
-    record Outcome(boolean newProduct, boolean priceStored) {}
+    record Outcome(boolean newProduct, boolean priceStored, boolean dimensionConflict) {
+
+        static final Outcome SKIPPED = new Outcome(false, false, false);
+    }
 
     /** Each write commits on its own: one bad listing never undoes the rest of a run. */
     Outcome ingest(CatalogSource source, StoreListing l) {
         if (l.name() == null || l.name().isBlank() || l.price() == null || l.price().signum() <= 0
                 || l.packageQuantity() == null || l.packageQuantity().signum() <= 0 || l.packageUnit() == null) {
-            return new Outcome(false, false);
+            return Outcome.SKIPPED;
         }
         Instant now = clock.instant();
         // By barcode when the store gives one; otherwise by name (fresh produce: "Banano", "Papa capira")
@@ -75,7 +82,9 @@ public class IngestCatalogUseCase {
         Optional<CatalogProduct> existing = gtin != null ? catalog.findByGtin(gtin)
                 : catalog.findByNormalizedName(CatalogProduct.normalize(l.name()));
         if (existing.isPresent() && existing.get().dimension() != l.packageUnit().dimension()) {
-            return new Outcome(false, false);
+            log.warn("Catalog ingest: {} listing '{}' is measured in {} but catalog product {} is {}; price not stored",
+                    source.chain(), l.name(), l.packageUnit().dimension(), existing.get().id(), existing.get().dimension());
+            return new Outcome(false, false, true);
         }
         CatalogProduct product = existing.orElseGet(() ->
                 catalog.save(CatalogProduct.create(l.name(), l.brand(), gtin, l.packageUnit().dimension(), now)));
@@ -91,6 +100,6 @@ public class IngestCatalogUseCase {
             prices.save(new PriceObservation(null, null, null, chain.id(), product.id(), l.price(), l.currency(), base,
                     l.packageUnit(), unitPrice, source.country(), Visibility.PUBLIC, now, null, now));
         }
-        return new Outcome(existing.isEmpty(), !fresh);
+        return new Outcome(existing.isEmpty(), !fresh, false);
     }
 }
